@@ -2,34 +2,49 @@ import { useState, useEffect } from 'react'
 import { Save } from 'lucide-react'
 import { supabase } from '../../lib/supabase'
 
+const DEFAULT_ID = '00000000-0000-0000-0000-000000000000'
+
 export const Settings = () => {
-  const [saving, setSaving] = useState(false)
   const [profile, setProfile] = useState({
+    id: DEFAULT_ID,
     height: 175,
     weight_goal: 70,
-    fat_goal: 15,
     kcal_goal: 2000,
     protein_goal: 150,
     carbs_goal: 250,
     fats_goal: 70
   })
+  const [saving, setSaving] = useState(false)
 
   useEffect(() => {
     fetchProfile()
   }, [])
 
   const fetchProfile = async () => {
-    const { data } = await supabase.from('profiles').select('*').single()
+    const { data } = await supabase
+      .from('profiles')
+      .select('*')
+      .eq('id', DEFAULT_ID)
+      .single()
     if (data) setProfile(data)
   }
 
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault()
     setSaving(true)
-    const { error } = await supabase.from('profiles').upsert(profile)
-    if (error) alert(error.message)
-    else alert('¡Objetivos guardados!')
-    setSaving(false)
+    
+    try {
+      const { error } = await supabase
+        .from('profiles')
+        .upsert({ ...profile, id: DEFAULT_ID })
+      
+      if (error) throw error
+      alert('Configuración guardada!')
+    } catch (err: any) {
+      alert('Error: ' + err.message)
+    } finally {
+      setSaving(false)
+    }
   }
 
   return (

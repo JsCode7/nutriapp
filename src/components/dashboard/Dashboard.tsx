@@ -34,6 +34,7 @@ export const Dashboard = ({ onNavigate }: DashboardProps) => {
     const { data: profile } = await supabase
       .from('profiles')
       .select('*')
+      .eq('id', '00000000-0000-0000-0000-000000000000')
       .single()
 
     // 2. Fetch Latest Weight

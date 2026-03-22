@@ -8,12 +8,19 @@ export const History = () => {
 
   useEffect(() => {
     fetchHistory()
+    fetchProfile() // Call fetchProfile on mount
   }, [])
 
-  const fetchHistory = async () => {
-    const { data: profileData } = await supabase.from('profiles').select('*').single()
-    setProfile(profileData)
+  const fetchProfile = async () => {
+    const { data } = await supabase
+      .from('profiles')
+      .select('height')
+      .eq('id', '00000000-0000-0000-0000-000000000000')
+      .single()
+    if (data) setProfile(data)
+  }
 
+  const fetchHistory = async () => {
     const { data } = await supabase
       .from('weight_logs')
       .select('*')
