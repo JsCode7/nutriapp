@@ -5,6 +5,7 @@ import { supabase } from '../../lib/supabase'
 export const WeightLogForm = () => {
   const [weight, setWeight] = useState('')
   const [fat, setFat] = useState('')
+  const [date, setDate] = useState(new Date().toISOString().split('T')[0])
   const [loading, setLoading] = useState(false)
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -16,7 +17,8 @@ export const WeightLogForm = () => {
         .from('weight_logs')
         .insert([{ 
           weight: parseFloat(weight), 
-          fat_percent: fat ? parseFloat(fat) : null 
+          fat_percent: fat ? parseFloat(fat) : null,
+          created_at: new Date(date).toISOString()
         }])
 
       if (error) throw error
@@ -42,6 +44,15 @@ export const WeightLogForm = () => {
           value={weight} 
           onChange={(e) => setWeight(e.target.value)} 
           placeholder="75.0"
+          required 
+        />
+      </div>
+      <div className="form-group">
+        <label>Fecha</label>
+        <input 
+          type="date" 
+          value={date} 
+          onChange={(e) => setDate(e.target.value)} 
           required 
         />
       </div>

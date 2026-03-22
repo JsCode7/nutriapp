@@ -7,6 +7,7 @@ export const FoodLogForm = () => {
   const [protein, setProtein] = useState('')
   const [carbs, setCarbs] = useState('')
   const [fats, setFats] = useState('')
+  const [date, setDate] = useState(new Date().toISOString().split('T')[0])
   const [loading, setLoading] = useState(false)
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -20,7 +21,8 @@ export const FoodLogForm = () => {
           kcal: parseInt(kcal), 
           protein: parseFloat(protein),
           carbs: parseFloat(carbs || '0'),
-          fats: parseFloat(fats || '0')
+          fats: parseFloat(fats || '0'),
+          created_at: new Date(date).toISOString()
         }])
 
       if (error) throw error
@@ -40,6 +42,15 @@ export const FoodLogForm = () => {
   return (
     <form className="log-form premium-card" onSubmit={handleSubmit}>
       <h3>Registrar Comida</h3>
+      <div className="form-group">
+        <label>Fecha</label>
+        <input 
+          type="date" 
+          value={date} 
+          onChange={(e) => setDate(e.target.value)} 
+          required 
+        />
+      </div>
       <div className="form-group">
         <label>Calorías (kcal)</label>
         <input 

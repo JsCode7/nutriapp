@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { User, TrendingUp, Flame, Plus, Activity } from 'lucide-react'
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts'
 import { supabase } from '../../lib/supabase'
 import tipsData from '../../data/tips.json'
 
@@ -10,6 +11,7 @@ interface DashboardProps {
 export const Dashboard = ({ onNavigate }: DashboardProps) => {
   const [loading, setLoading] = useState(true)
   const [dailyTips, setDailyTips] = useState<any[]>([])
+  const [chartData, setChartData] = useState<any[]>([])
   const [metrics, setMetrics] = useState({
     weight: 0,
     fat: 0,
@@ -37,12 +39,19 @@ export const Dashboard = ({ onNavigate }: DashboardProps) => {
       .eq('id', '00000000-0000-0000-0000-000000000000')
       .maybeSingle()
 
-    // 2. Fetch Latest Weight
+    // 2. Fetch Weight Logs for Chart
     const { data: weightLogs } = await supabase
       .from('weight_logs')
       .select('*')
-      .order('created_at', { ascending: false })
-      .limit(1)
+      .order('created_at', { ascending: true })
+      .limit(10)
+    
+    if (weightLogs) {
+      setChartData(weightLogs.map(log => ({
+        date: new Date(log.created_at).toLocaleDateString(undefined, { day: 'numeric', month: 'short' }),
+        weight: log.weight
+      })))
+    }
 
     // 3. Fetch Today's Food
     const today = new Date().toISOString().split('T')[0]
@@ -56,12 +65,13 @@ export const Dashboard = ({ onNavigate }: DashboardProps) => {
     const carbsSum = foodLogs?.reduce((acc, log) => acc + log.carbs, 0) || 0
     const fatsSum = foodLogs?.reduce((acc, log) => acc + (log.fats || 0), 0) || 0
 
-    const latestWeight = weightLogs?.[0]?.weight || 0
+    const latestWeight = weightLogs?.[weightLogs.length - 1]?.weight || 0
+    const latestFat = weightLogs?.[weightLogs.length - 1]?.fat_percent || 0
     const heightM = (profile?.height || 175) / 100
 
     setMetrics({
       weight: latestWeight,
-      fat: weightLogs?.[0]?.fat_percent || 0,
+      fat: latestFat,
       bmi: latestWeight > 0 ? parseFloat((latestWeight / (heightM * heightM)).toFixed(1)) : 0,
       kcalConsumed: kcalSum,
       proteinConsumed: proteinSum,
@@ -192,6 +202,40 @@ export const Dashboard = ({ onNavigate }: DashboardProps) => {
         </div>
       </section>
 
+      <section className="evolution-chart-section">
+        <div className="premium-card chart-card-neon">
+          <div className="card-header">
+            <h3>Evolución de Peso</h3>
+            <TrendingUp size={20} color="#3b82f6" />
+          </div>
+          <div className="chart-container-dash">
+            <ResponsiveContainer width="100%" height={180}>
+              <LineChart data={chartData}>
+                <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" vertical={false} />
+                <XAxis 
+                  dataKey="date" 
+                  axisLine={false} 
+                  tickLine={false} 
+                  tick={{fill: 'rgba(255,255,255,0.4)', fontSize: 10}} 
+                />
+                <YAxis hide domain={['dataMin - 1', 'dataMax + 1']} />
+                <Tooltip 
+                  contentStyle={{ background: '#0f172a', border: '1px solid var(--glass-border)', borderRadius: '12px', fontSize: '12px' }}
+                />
+                <Line 
+                  type="monotone" 
+                  dataKey="weight" 
+                  stroke="#3b82f6" 
+                  strokeWidth={3} 
+                  dot={{ r: 4, fill: '#3b82f6', strokeWidth: 2, stroke: '#fff' }}
+                  activeDot={{ r: 6, strokeWidth: 0 }}
+                />
+              </LineChart>
+            </ResponsiveContainer>
+          </div>
+        </div>
+      </section>
+
       <section className="recommendations-row">
         <h3>Consejos del Día</h3>
         <div className="tips-container">
@@ -213,13 +257,25 @@ export const Dashboard = ({ onNavigate }: DashboardProps) => {
           display: flex;
           flex-direction: column;
           gap: 1.5rem;
-          padding-bottom: 2rem;
+          padding-bottom: 5rem;
+        }
+        .evolution-chart-section {
+          margin-bottom: 0.5rem;
+        }
+        .chart-card-neon {
+          padding: 1.5rem;
+          border: 1px solid rgba(59, 130, 246, 0.2);
+          box-shadow: 0 0 15px rgba(59, 130, 246, 0.1);
+        }
+        .chart-container-dash {
+          margin-top: 1rem;
+          width: 100%;
         }
         .dash-header {
           display: flex;
           justify-content: space-between;
           align-items: center;
-          margin-bottom: 0.5rem;
+          margin-bottom: 1rem;
         }
         .dash-header h1 {
           font-size: 2.2rem;

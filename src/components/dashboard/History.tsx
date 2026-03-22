@@ -4,11 +4,13 @@ import { supabase } from '../../lib/supabase'
 
 export const History = () => {
   const [logs, setLogs] = useState<any[]>([])
+  const [foodHistory, setFoodHistory] = useState<any[]>([])
   const [profile, setProfile] = useState<any>(null)
 
   useEffect(() => {
     fetchHistory()
-    fetchProfile() // Call fetchProfile on mount
+    fetchFoodHistory()
+    fetchProfile()
   }, [])
 
   const fetchProfile = async () => {
@@ -18,6 +20,28 @@ export const History = () => {
       .eq('id', '00000000-0000-0000-0000-000000000000')
       .maybeSingle()
     if (data) setProfile(data)
+  }
+
+  const fetchFoodHistory = async () => {
+    const { data } = await supabase
+      .from('food_logs')
+      .select('*')
+      .order('created_at', { ascending: false })
+    
+    if (data) {
+      const grouped = data.reduce((acc: any, log: any) => {
+        const date = new Date(log.created_at).toLocaleDateString()
+        if (!acc[date]) {
+          acc[date] = { date, kcal: 0, protein: 0, carbs: 0, fats: 0 }
+        }
+        acc[date].kcal += log.kcal
+        acc[date].protein += log.protein
+        acc[date].carbs += log.carbs
+        acc[date].fats += log.fats || 0
+        return acc
+      }, {})
+      setFoodHistory(Object.values(grouped))
+    }
   }
 
   const fetchHistory = async () => {
@@ -89,7 +113,35 @@ export const History = () => {
       </div>
 
       <div className="premium-card logs-card">
-        <h3>Registros Recientes</h3>
+        <h3>Historial de Consumo Diario</h3>
+        <div className="table-responsive">
+          <table>
+            <thead>
+              <tr>
+                <th>Fecha</th>
+                <th>Kcal</th>
+                <th>Prot (g)</th>
+                <th>Carbs (g)</th>
+                <th>Grasas (g)</th>
+              </tr>
+            </thead>
+            <tbody>
+              {foodHistory.map((day, idx) => (
+                <tr key={idx}>
+                  <td>{day.date}</td>
+                  <td>{day.kcal}</td>
+                  <td>{day.protein}</td>
+                  <td>{day.carbs}</td>
+                  <td>{day.fats.toFixed(1)}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div className="premium-card logs-card">
+        <h3>Registros de Peso</h3>
         <div className="table-responsive">
           <table>
             <thead>
