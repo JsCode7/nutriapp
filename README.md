@@ -1,73 +1,63 @@
-# React + TypeScript + Vite
+# NutriApp - Premium Health Tracker
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+NutriApp is a modern, high-performance web application designed for tracking health and nutrition with a stunning **Premium Glassmorphism UI**.
 
-Currently, two official plugins are available:
+![Dashboard Preview](public/preview.png) *(Note: Add a preview image in public/ if desired)*
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## ✨ Features
 
-## React Compiler
+- **Dashboard V2**: Modern glassmorphism interface with real-time progress tracking.
+- **Kcal & Macro Tracker**: Circular visualization for daily calorie intake and progress bars for Protein, Carbs, and Fats.
+- **Body Metrics**: Track Weight, IMC (BMI), and Fat Percentage.
+- **Interactive History**: Visual evolution charts (Weight vs Time) using Recharts.
+- **Daily Nutritional Tips**: Rotating tips authorized by WHO recommendations.
+- **PWA Ready**: Installable application with offline support and prepared for Push Notifications.
+- **Supabase Integration**: Real-time database for persistent and secure user data.
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## 🚀 Tech Stack
 
-## Expanding the ESLint configuration
+- **Frontend**: React 18, TypeScript, Vite.
+- **Styling**: Vanilla CSS with Glassmorphism & Custom Properties.
+- **Icons**: Lucide React.
+- **Charts**: Recharts.
+- **Backend**: Supabase (PostgreSQL + Auth).
+- **PWA**: Vite PWA Plugin.
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+## 🛠️ Setup & Installation
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+1. **Clone the repository**:
+   ```bash
+   git clone <your-repo-url>
+   cd app-nutri
+   ```
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+2. **Install dependencies**:
+   ```bash
+   pnpm install
+   ```
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+3. **Environment Variables**:
+   Create a `.env` file in the root based on `.env.example`:
+   ```env
+   VITE_SUPABASE_URL=your_supabase_url
+   VITE_SUPABASE_ANON_KEY=your_supabase_anon_key
+   ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+4. **Database Setup**:
+   Run the content of `supabase_init.sql` in your Supabase SQL Editor.
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+5. **Run in development**:
+   ```bash
+   pnpm run dev
+   ```
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+6. **Build for production**:
+   ```bash
+   pnpm run build
+   ```
+
+## 📱 Mobile First
+The interface is optimized for mobile devices with a fixed bottom navigation bar and touch-friendly interactive elements.
+
+## 📄 License
+MIT

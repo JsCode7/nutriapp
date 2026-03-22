@@ -1,16 +1,34 @@
 import { useState } from 'react'
 import { Plus } from 'lucide-react'
+import { supabase } from '../../lib/supabase'
 
 export const WeightLogForm = () => {
   const [weight, setWeight] = useState('')
   const [fat, setFat] = useState('')
+  const [loading, setLoading] = useState(false)
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    console.log('Logging weight:', { weight, fat, date: new Date() })
-    // Reset form
-    setWeight('')
-    setFat('')
+    setLoading(true)
+    
+    try {
+      const { error } = await supabase
+        .from('weight_logs')
+        .insert([{ 
+          weight: parseFloat(weight), 
+          fat_percent: fat ? parseFloat(fat) : null 
+        }])
+
+      if (error) throw error
+      
+      alert('Registro guardado!')
+      setWeight('')
+      setFat('')
+    } catch (err: any) {
+      alert('Error: ' + err.message)
+    } finally {
+      setLoading(false)
+    }
   }
 
   return (
@@ -37,16 +55,20 @@ export const WeightLogForm = () => {
           placeholder="18.5"
         />
       </div>
-      <button type="submit" className="submit-btn">
-        <Plus size={18} /> Guardar Registro
+      <button type="submit" className="submit-btn" disabled={loading}>
+        <Plus size={18} /> {loading ? 'Enviando...' : 'Guardar Registro'}
       </button>
 
       <style>{`
         .log-form {
           display: flex;
           flex-direction: column;
-          gap: 1rem;
-          max-width: 400px;
+          gap: 1.5rem;
+        }
+        .log-form h3 {
+          color: white;
+          margin: 0;
+          font-size: 1.2rem;
         }
         .form-group {
           display: flex;
@@ -58,12 +80,13 @@ export const WeightLogForm = () => {
           font-size: 0.9rem;
         }
         .form-group input {
-          background: var(--bg-dark);
-          border: 1px solid var(--border);
-          color: var(--text-main);
+          background: rgba(255,255,255,0.05);
+          border: 1px solid var(--glass-border);
+          color: white;
           padding: 0.8rem;
-          border-radius: 8px;
+          border-radius: 12px;
           outline: none;
+          transition: border-color 0.2s;
         }
         .form-group input:focus {
           border-color: var(--primary);

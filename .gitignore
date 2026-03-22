@@ -22,3 +22,15 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Project specific
+.env
+.env.test
+.env*.local
+supabase_init.sql
+
+# Temporary files
+/tmp
+.vercel
+.netlify
+.pnpm-debug.log*

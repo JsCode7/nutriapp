@@ -3,35 +3,32 @@ import { Navbar } from './Navbar.tsx'
 
 interface LayoutProps {
   children: ReactNode
+  currentView: string
+  onNavigate: (view: string) => void
 }
 
-export const Layout = ({ children }: LayoutProps) => {
+export const Layout = ({ children, currentView, onNavigate }: LayoutProps) => {
   return (
     <div className="layout">
-      <Navbar />
-      <main className="main-content">
+      <main className="content">
         {children}
       </main>
+      <Navbar currentView={currentView} onNavigate={onNavigate} />
+      
       <style>{`
         .layout {
+          min-height: 100vh;
           display: flex;
           flex-direction: column;
-          min-height: 100vh;
-          width: 100%;
-          background-color: var(--bg-dark);
         }
-        .main-content {
+        .content {
           flex: 1;
-          padding: 2rem;
-          max-width: 1200px;
+          padding: 1.5rem;
+          padding-bottom: 7rem; /* Space for bottom nav */
+          max-width: 800px;
           margin: 0 auto;
           width: 100%;
-        }
-        @media (max-width: 640px) {
-          .main-content {
-            padding: 1rem;
-            padding-bottom: 5rem; /* Space for bottom nav on mobile */
-          }
+          box-sizing: border-box;
         }
       `}</style>
     </div>
