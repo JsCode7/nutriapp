@@ -16,7 +16,7 @@ export const History = () => {
       .from('profiles')
       .select('height')
       .eq('id', '00000000-0000-0000-0000-000000000000')
-      .single()
+      .maybeSingle()
     if (data) setProfile(data)
   }
 

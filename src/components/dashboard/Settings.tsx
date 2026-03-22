@@ -25,7 +25,7 @@ export const Settings = () => {
       .from('profiles')
       .select('*')
       .eq('id', DEFAULT_ID)
-      .single()
+      .maybeSingle()
     if (data) setProfile(data)
   }
 
